@@ -3,7 +3,7 @@ const taskContainer=document.querySelector(".task__container");
 console.log(taskContainer);
 
 //global store
-const globalStore = [];
+let globalStore = [];
 
 const newCard= ({
     id, 
@@ -11,11 +11,12 @@ const newCard= ({
     taskTitle,
     taskDescription,
     taskType,
-}) => `<div class="col-md-6 col-lg-4" id=${id}>
+}) => `<div class="col-md-6 col-lg-4" >
 <div class="card">
   <div class="card-header d-flex justify-content-end gap-2">
     <button type="button" class="btn btn-outline-success"><i class="fas fa-pencil-alt"></i></button>
-<button type="button" class="btn btn-outline-danger"><i class="fas fa-trash-alt"></i></button>
+<button type="button" id=${id} class="btn btn-outline-danger" onclick="deleteCard.apply(this, arguments)">
+<i class="fas fa-trash-alt" id=${id} onclick="deleteCard.apply(this, arguments)"></i></button>
   </div>
   <img src=${imageUrl} class="card-img-top" alt="...">
   <div class="card-body">
@@ -46,7 +47,7 @@ taskContainer.insertAdjacentHTML("beforeend",createNewCard);
 
 };
 
-
+const updateLocalStorage =()=>localStorage.setItem("tasky", JSON.stringify({cards:globalStore}));
 
 const saveChanges = () => {
     const taskData={
@@ -65,7 +66,7 @@ taskDescription: document.getElementById("taskdescription").value,
     taskContainer.insertAdjacentHTML("beforeend",createNewCard);
     globalStore.push(taskData);
     
-    localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
+    updateLocalStorage();
     
 
     // Application programmimg interface
@@ -74,7 +75,35 @@ taskDescription: document.getElementById("taskdescription").value,
 
 //add to localstorage
 
-
-
 };
+
+const deleteCard= (event) =>{
+//id
+event= window.event;
+const targetID=event.target.id;
+const tagname=event.target.tagName;
+console.log(targetID);
+//search the globalStore, remove the obj  which matches with id
+globalStore = globalStore.filter((cardObject)=> cardObject.id !==targetID);
+
+updateLocalStorage();
+//access DOM to remove them
+
+if(tagname==="BUTTON")
+//task container
+{
+  return taskContainer.removeChild(
+  event.target.parentNode.parentNode.parentNode  //col-lg-4
+  );
+}
+
+return taskContainer.removeChild(
+  event.target.parentNode.parentNode.parentNode.parentNode  //col-lg-4
+  );
+
+
+
+//loop over new globalStore and inject updated cards to DOM
+};
+
 
